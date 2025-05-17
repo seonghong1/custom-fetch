@@ -1,40 +1,21 @@
 /**
+ * @typedef {Object} FetchOptions
+ * @property {string} [method='POST'] - HTTP 메서드
+ * @property {string} [baseURL=''] - 기본 URL
+ * @property {'json'|'text'|'blob'} [responseType='json'] - 응답 데이터 타입
+ * @property {Object.<string, any>} [params=null] - URL 쿼리 파라미터
+ * @property {Object|FormData|null} [data=null] - 요청 본문 데이터
+ * @property {number} [timeout=0] - 요청 타임아웃 시간(ms)
+ * @property {Function|null} [successCallback=null] - 요청 성공 시 실행할 콜백 함수
+ * @property {Function|null} [errorCallback=null] - 요청 실패 시 실행할 콜백 함수
+ */
+
+/**
  * HTTP 요청을 처리하는 커스텀 fetch 래퍼 함수
  *
  * @param {string} url - 요청할 엔드포인트 URL
- * @param {Object} options - 요청 옵션
- * @param {string} [options.method='POST'] - HTTP 메서드
- * @param {string} [options.baseURL=''] - 기본 URL
- * @param {('json'|'text'|'blob')} [options.responseType='json'] - 응답 데이터 타입
- * @param {Object} [options.params=null] - URL 쿼리 파라미터
- * @param {Object} [options.data=null] - 요청 본문 데이터
- * @param {number} [options.timeout=0] - 요청 타임아웃 시간(ms)
- * @param {Function} [options.successCallback=null] - 요청 성공 시 실행할 콜백 함수
- * @param {Function} [options.errorCallback=null] - 요청 실패 시 실행할 콜백 함수
- *
- * @returns {Promise<any>} 응답 데이터
- *
- * @example
- * // 기본 사용
- * await customFetch('/api/users', {
- *   method: 'GET',
- *   data: { name: 'John' }
- * });
- *
- * @example
- * // 모든 옵션 사용
- * await customFetch('/api/users', {
- *   method: 'POST',
- *   baseURL: 'https://api.example.com',
- *   responseType: 'json',
- *   params: { page: 1 },
- *   data: { name: 'John' },
- *   timeout: 5000,
- *   successCallback: (res) => console.log(res),
- *   errorCallback: (err) => console.error(err)
- * });
- *
- * @throws {Error} 요청 실패 시 에러 발생
+ * @param {FetchOptions} options - 요청 옵션
+ * @returns {Promise<any>} - 요청 성공 시 응답 데이터를 반환하고, 실패 시 예외를 throw
  */
 export const customFetch = async (url, options) => {
     const {
@@ -87,15 +68,18 @@ const createFullUrl = (url, baseURL, params) => {
 };
 
 // 요청 설정 생성 헬퍼 함수
-const createRequestConfig = (method, data, controller) => ({
-    method,
-    body: data ? JSON.stringify(data) : null,
-    headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + getToken(),
-    },
-    signal: controller.signal,
-});
+const createRequestConfig = (method, data, controller) => {
+    return {
+        method,
+        body: data ? JSON.stringify(data) : null,
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + getToken(),
+        },
+        signal: controller.signal,
+    };
+}
+
 
 // 응답 처리 헬퍼 함수
 const handleResponse = async (
@@ -152,6 +136,6 @@ const cleanupTimeout = (timeoutId) => {
 
 // 토큰 가져오기 헬퍼 함수
 const getToken = () => {
-    // 토큰 가져오는 로직 구현
-    return '어딘가의 토큰값';
+  // 실제 구현 필요 (예: localStorage, 쿠키 등)
+  return '어딘가의 토큰값';
 };
